@@ -6,9 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.S3" Version="3.3.17.1" />
+    <PackageReference Include="AWSSDK.EC2" Version="3.3.47.1" />
     <PackageReference Include="Rhyous.SimpleArgs" Version="2.0.0" />
     <PackageReference Include="Rhyous.StringLibrary" Version="1.1.1" />
+    <PackageReference Include="SSH.NET" Version="2016.1.0" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.4.1" />
   </ItemGroup>
 

@@ -13,13 +13,13 @@ namespace Rhyous.AmazonS3BucketManager
 {
     public class BucketManager
     {
-        public static async Task CreateBucket(AmazonS3Client client, string bucket)
+        public static async Task CreateBucketAsync(AmazonS3Client client, string bucket)
         {
             await client.PutBucketAsync(bucket);
             Console.WriteLine($"Created S3 bucket: {bucket}");
         }
 
-        public static async Task CreateBucketDirectory(AmazonS3Client client, string bucket, string directory)
+        public static async Task CreateBucketDirectoryAsync(AmazonS3Client client, string bucket, string directory)
         {
             var dirRequest = new PutObjectRequest
             {
@@ -30,14 +30,14 @@ namespace Rhyous.AmazonS3BucketManager
             await client.PutObjectAsync(dirRequest);
             Console.WriteLine($"Created S3 bucket folder: {bucket}/{directory}/");
         }
-        public static async Task DeleteBucketDirectory(AmazonS3Client client, string bucket, string directory)
+        public static async Task DeleteBucketDirectoryAsync(AmazonS3Client client, string bucket, string directory)
         {
             if (!directory.EndsWith("/"))
                 directory = directory += "/";
-            await DeleteFile(client, bucket, directory);
+            await DeleteFileAsync(client, bucket, directory);
         }
 
-        public static async Task CreateTextFile(AmazonS3Client client, string bucket, string filename, string text)
+        public static async Task CreateTextFileAsync(AmazonS3Client client, string bucket, string filename, string text)
         {
             var dirRequest = new PutObjectRequest
             {
@@ -49,7 +49,7 @@ namespace Rhyous.AmazonS3BucketManager
             Console.WriteLine($"Created text file in S3 bucket: {bucket}/{filename}");
         }
 
-        public static async Task DeleteFile(AmazonS3Client client, string bucket, string filename)
+        public static async Task DeleteFileAsync(AmazonS3Client client, string bucket, string filename)
         {
             var dirRequest = new DeleteObjectRequest
             {
@@ -60,13 +60,13 @@ namespace Rhyous.AmazonS3BucketManager
             Console.WriteLine($"Deleted item from S3 bucket: {bucket}/{filename}");
         }
 
-        public static async Task DeleteBucket(AmazonS3Client client, string bucket)
+        public static async Task DeleteBucketAsync(AmazonS3Client client, string bucket)
         {
             await AmazonS3Util.DeleteS3BucketWithObjectsAsync(client, bucket);
             Console.WriteLine($"Deleted S3 bucket: {bucket}");
         }
 
-        public static async Task ListFiles(AmazonS3Client client, string bucket)
+        public static async Task ListFilesAsync(AmazonS3Client client, string bucket)
         {
             var listResponse = await client.ListObjectsV2Async(new ListObjectsV2Request { BucketName = bucket });
             if (listResponse.S3Objects.Count > 0)
@@ -76,7 +76,7 @@ namespace Rhyous.AmazonS3BucketManager
             }
         }
 
-        public static async Task UploadFile(TransferUtility transferUtility, string bucket, string file, string remoteDirectory = null)
+        public static async Task UploadFileAsync(TransferUtility transferUtility, string bucket, string file, string remoteDirectory = null)
         {
             var key = Path.GetFileName(file);
             if (!string.IsNullOrWhiteSpace(remoteDirectory))
@@ -87,11 +87,11 @@ namespace Rhyous.AmazonS3BucketManager
             await Task.Run(() => transferUtility.Upload(file, bucket, key));
         }
 
-        public static async Task UploadFiles(TransferUtility transferUtility, string bucket, string localDirectory)
+        public static async Task UploadFilesAsync(TransferUtility transferUtility, string bucket, string localDirectory)
         {
             var files = await FileUtils.GetFiles(localDirectory, true);
             var directoryName = Path.GetFileName(localDirectory); // This is not a typo. GetFileName is correctly used.            
-            var tasks = files.Select(f => UploadFile(transferUtility, bucket, f, f.Substring(f.IndexOf(directoryName)).Replace('\\', '/')));
+            var tasks = files.Select(f => UploadFileAsync(transferUtility, bucket, f, f.Substring(f.IndexOf(directoryName)).Replace('\\', '/')));
             await Task.WhenAll(tasks);
         }
     }
